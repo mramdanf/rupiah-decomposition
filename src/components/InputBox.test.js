@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import { findByTestAttr } from '../utils/testUtils'
+import { findByTestAttr, checkProps } from '../utils/testUtils'
 import InputBox from './InputBox'
 
 const defaultProps = { submitRupiah: () => {} }
@@ -55,4 +55,7 @@ describe('submit button click', () => {
     const submitRupiahPropArgs = submitRupiahMock.mock.calls[0][0]
     expect(submitRupiahPropArgs).toBe(inputRupiah)
   })
+})
+test('does not throw warning with expected props', () => {
+  checkProps(InputBox, defaultProps)
 })

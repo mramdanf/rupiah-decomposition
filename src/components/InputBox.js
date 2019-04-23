@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 class InputBox extends React.Component {
   constructor(props) {
@@ -38,6 +39,10 @@ class InputBox extends React.Component {
       </dir>
     )
   }
+}
+
+InputBox.propTypes = {
+  submitRupiah: PropTypes.func.isRequired
 }
 
 export default InputBox
