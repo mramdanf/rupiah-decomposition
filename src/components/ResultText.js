@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const ResutlText = (props) => {
   const text = (props.display) ? props.text : ""
@@ -7,6 +8,11 @@ const ResutlText = (props) => {
       <p data-test="result-text">{ text }</p>
     </div>
   )
+}
+
+ResutlText.propTypes = {
+  display: PropTypes.bool.isRequired,
+  text: PropTypes.string.isRequired,
 }
 
 export default ResutlText
