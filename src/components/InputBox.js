@@ -43,10 +43,10 @@ class InputBox extends React.Component {
     // Input rupiah validation      
     const inValidCheck = [
       { pattern: /^([^0-9]*)$/, errMsg: 'missing value' },
-      { pattern: /.,./, errMsg: 'invalid separator' },
-      { pattern: /. ./, errMsg: 'invalid separator' },
+      { pattern: /\d+,\d+/, errMsg: 'invalid separator' },
+      { pattern: /\d+ \d+/, errMsg: 'invalid separator' },
       { pattern: /\d*.Rp/, errMsg: 'valid character in wrong position' },
-      { pattern: /[^0-9rp.]/gi, errMsg: 'invalid character' },
+      { pattern: /[^0-9rp. ]/gi, errMsg: 'invalid character' },
     ]
 
     inValidCheck.forEach(item => {
@@ -88,10 +88,11 @@ class InputBox extends React.Component {
     // Remove ,<space> in the end
     resultText = resultText.replace(/,.$/, '')
 
-    if (decomposeResult.left !== '' && resultText.length > 0) {
+    // Check left value
+    if (decomposeResult.left !== '' && resultText.length > 0) { // Not-only left value
       resultText += `, left ${decomposeResult.left}`
     }
-    else {
+    else { // Only left value
       resultText += `${decomposeResult.left}`
     }
 

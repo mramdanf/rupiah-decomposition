@@ -53,8 +53,8 @@ describe('submit button click', () => {
       expect(submitRupiahMock.mock.calls.length).toBe(1)
     })
     test('calls `submitRupiahProps` with non-empty arguments', () => {
-      const submitRupiahPropArgs = submitRupiahMock.mock.calls[0][0]
-      expect(submitRupiahPropArgs.toString().length).not.toBe(0)
+      const submitRupiahPropArgs = submitRupiahMock.mock.calls[0]
+      expect(submitRupiahPropArgs.length).toBe(2)
     })
   })
   describe('calcuate decomposition', () => {
