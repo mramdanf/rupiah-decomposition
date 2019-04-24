@@ -2,6 +2,7 @@ import React from 'react'
 import { shallow } from 'enzyme'
 
 import { findByTestAttr, checkProps } from '../utils/testUtils'
+import { calcuateDecomposeRupiah } from '../utils/appUtils'
 import InputBox from './InputBox'
 
 const defaultProps = { submitRupiah: () => {} }
@@ -34,27 +35,179 @@ describe('renders', () => {
   })
 })
 describe('submit button click', () => {
-  let submitRupiahMock
-  let inputRupiah = 1000
-  beforeEach(() => {
-    submitRupiahMock = jest.fn()
-    const props = {
-      submitRupiah: submitRupiahMock
-    }
-    const wrapper = setup(props)
+  describe('mocking submitRupiahCall', () => {
+    let submitRupiahMock
+    beforeEach(() => {
+      submitRupiahMock = jest.fn()
+      const props = {
+        submitRupiah: submitRupiahMock
+      }
+      const wrapper = setup(props)
 
-    wrapper.instance().inputRupiah.current = { value: inputRupiah }
+      wrapper.instance().inputRupiah.current = { value: 1000 }
 
-    const submitButton = findByTestAttr(wrapper, 'submit-button')
-    submitButton.simulate('click', { preventDefault() {} })
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+    })
+    test('calls `submitRupiahProps`', () => {
+      expect(submitRupiahMock.mock.calls.length).toBe(1)
+    })
+    test('calls `submitRupiahProps` with non-empty arguments', () => {
+      const submitRupiahPropArgs = submitRupiahMock.mock.calls[0][0]
+      expect(submitRupiahPropArgs.toString().length).not.toBe(0)
+    })
   })
-  test('calls `submitRupiahProps`', () => {
-    expect(submitRupiahMock.mock.calls.length).toBe(1)
+  describe('calcuate decomposition', () => {
+    let wrapper
+    beforeEach(() => {
+      wrapper = setup()
+    })
+    test('decompose 15000 rupiah', () => {
+      let inputRupiah = 15000
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      const decomposeResult = calcuateDecomposeRupiah(inputRupiah)
+      expect(wrapper.instance().state.decomposeResult).toEqual(decomposeResult)
+    })
+    test('decompose 12510 rupiah', () => {
+      let inputRupiah = 12510
+      
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      const decomposeResult = calcuateDecomposeRupiah(inputRupiah)
+      expect(wrapper.instance().state.decomposeResult).toEqual(decomposeResult)
+    })
   })
-  test('calls `submitRupiahProps` with input rupiah value as arguments', () => {
-    const submitRupiahPropArgs = submitRupiahMock.mock.calls[0][0]
-    expect(submitRupiahPropArgs).toBe(inputRupiah)
+  describe('inputRupiah validation error', () => {
+    let wrapper
+    beforeEach(() => {
+      wrapper = setup()
+    })
+    test('generate `invalid separator` error message with input value `17,500`', () => {
+      let inputRupiah = '17,500'
+      const expectedErrorMsg = 'invalid separator'
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+      
+      expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
+    })
+    test('generate `invalid separator` error message with input value `2 500`', () => {
+      let inputRupiah = '2 500'
+      const expectedErrorMsg = 'invalid separator'
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
+    })
+    test('generate `valid character in wrong position` error message with input value `3000 Rp`', () => {
+      let inputRupiah = '3000 Rp'
+      const expectedErrorMsg = 'valid character in wrong position'
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
+    })
+    test('generate `missing value` error message when there is no number inside input value', () => {
+      let inputRupiah = 'Rp'
+      const expectedErrorMsg = 'missing value'
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+      
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
+    })
   })
+  describe('inputRupiah validation success and inputRupiah parsing', () => {
+    let wrapper
+    beforeEach(() => {
+      wrapper = setup()
+    })
+    test('get `18215` with input `18.215`', () => {
+      let inputRupiah = '18.215'
+      const expectedParsedInput = 18215
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
+    })
+    test('get `17500` with input `Rp17500`', () => {
+      let inputRupiah = 'Rp17500'
+      const expectedParsedInput = 17500
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
+    })
+    test('get `17500` with input `Rp17.500,00`', () => {
+      let inputRupiah = 'Rp17.500,00'
+      const expectedParsedInput = 17500
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
+    })
+    test('get `120325` with input `Rp 120.325`', () => {
+      let inputRupiah = 'Rp 120.325'
+      const expectedParsedInput = 120325
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+      
+      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
+    })
+    test('get `5000` with input `005.000`', () => {
+      let inputRupiah = '005.000'
+      const expectedParsedInput = 5000
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+      
+      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
+    })
+    test('get `1000` with input `001000`', () => {
+      let inputRupiah = '001000'
+      const expectedParsedInput = 1000
+
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
+    })
+  })
+
 })
 test('does not throw warning with expected props', () => {
   checkProps(InputBox, defaultProps)

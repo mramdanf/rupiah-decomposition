@@ -12,7 +12,9 @@ class App extends React.Component {
   }
 
   decomposeRupiah = (val) => {
-    console.log(val)
+    this.setState({
+      rupiahDecompose: val
+    })
   }
 
   render() {
