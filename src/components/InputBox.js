@@ -25,7 +25,7 @@ class InputBox extends React.Component {
         inputRupiahError = false
 
     if (this.inputRupiah.current.value.toString().length <= 0) {
-      inputRupiahErrorMsg = 'An error occored: Input rupiah could not be empty'
+      inputRupiahErrorMsg = 'Input rupiah could not be empty'
       inputRupiahError = true
       this.setState({
         inputRupiahError,
@@ -50,7 +50,7 @@ class InputBox extends React.Component {
     }
 
     if (inputRupiahError) {
-      this.props.submitRupiah(`An error occored: ${inputRupiahErrorMsg}`, inputRupiahError)
+      this.props.submitRupiah(`${inputRupiahErrorMsg}`, inputRupiahError)
       return
     }
 
@@ -97,7 +97,9 @@ class InputBox extends React.Component {
         data-test="component-input-box"
         id="input-box-section"
       >
-        <h3 data-test="input-instructions">Please input value in rupiah. ex: 10.000</h3>
+        <div>
+          <h3 data-test="input-instructions">Please input value in rupiah</h3>
+        </div>
         <form>
           <div className="form-field">
             <input 
@@ -106,6 +108,7 @@ class InputBox extends React.Component {
               ref={this.inputRupiah}
               type="text"
             />
+            <small className="input-help">example valid input: 10000; 18.215; Rp17500; Rp17.500,00; Rp 120.325; 005.000; 001000</small>
           </div>
           <div className="form-field">
             <button

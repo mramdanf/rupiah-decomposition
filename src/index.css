@@ -26,6 +26,11 @@ form .form-field input {
   width: 60%;
 }
 
+form .form-field small {
+  display: block;
+  font-style: italic;
+}
+
 form .form-field {
   margin-bottom: 10px;
 }
