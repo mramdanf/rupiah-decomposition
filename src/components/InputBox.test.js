@@ -86,13 +86,14 @@ describe('submit button click', () => {
     })
   })
   describe('inputRupiah validation error', () => {
-    let wrapper
+    let wrapper,
+        expectedErrorMsg
     beforeEach(() => {
       wrapper = setup()
+      expectedErrorMsg = 'Invalid input rupiah'
     })
-    test('generate `invalid separator` error message with input value `17,500`', () => {
+    test('generate `Invalid input rupiah` error message with input value `17,500`', () => {
       let inputRupiah = '17,500'
-      const expectedErrorMsg = 'invalid separator'
 
       wrapper.instance().inputRupiah.current = { value: inputRupiah }
 
@@ -101,9 +102,8 @@ describe('submit button click', () => {
       
       expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
     })
-    test('generate `invalid separator` error message with input value `2 500`', () => {
+    test('generate `Invalid input rupiah` error message with input value `2 500`', () => {
       let inputRupiah = '2 500'
-      const expectedErrorMsg = 'invalid separator'
 
       wrapper.instance().inputRupiah.current = { value: inputRupiah }
 
@@ -112,9 +112,8 @@ describe('submit button click', () => {
 
       expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
     })
-    test('generate `valid character in wrong position` error message with input value `3000 Rp`', () => {
+    test('generate `Invalid input rupiah` error message with input value `3000 Rp`', () => {
       let inputRupiah = '3000 Rp'
-      const expectedErrorMsg = 'valid character in wrong position'
 
       wrapper.instance().inputRupiah.current = { value: inputRupiah }
 
@@ -123,9 +122,8 @@ describe('submit button click', () => {
 
       expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
     })
-    test('generate `missing value` error message when there is no number inside input value', () => {
+    test('generate `Invalid input rupiah` error message when there is no number inside input value', () => {
       let inputRupiah = 'Rp'
-      const expectedErrorMsg = 'missing value'
 
       wrapper.instance().inputRupiah.current = { value: inputRupiah }
       

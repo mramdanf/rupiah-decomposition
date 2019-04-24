@@ -35,38 +35,29 @@ class InputBox extends React.Component {
       return
     }
 
-    let inputRupiahValue = this.inputRupiah.current.value.toString()
-    
-    // Remove ending ,00 if exist
-    inputRupiahValue = inputRupiahValue.replace(/(,00)$/g, '')      
+    let inputRupiahValue = this.inputRupiah.current.value.toString()    
       
-    // Input rupiah validation      
-    const inValidCheck = [
-      { pattern: /^([^0-9]*)$/g, errMsg: 'missing value' },
-      { pattern: /\d+,\d+/g, errMsg: 'invalid separator' },
-      { pattern: /\d+ \d+/g, errMsg: 'invalid separator' },
-      { pattern: /\d*.Rp/g, errMsg: 'valid character in wrong position' },
-      { pattern: /[^0-9rp\-\. ]/gi, errMsg: 'invalid character' },
-      { pattern: /^(0^.|-|0+[^1-9]+\.|0\.)/g, errMsg: 'input rupiah sould be greater than zero' },
-    ]
+    // Input rupiah validation
+    let allowedPattern = /(?=.*\d)^(Rp|Rp )?(([1-9]\d{0,2}((\.\d{3})*|\d+))|(0+[1-9]+(\d+|(\.\d{3})*)))(,\d{1,2})?$/
 
-    inValidCheck.forEach(item => {
-      if (item.pattern.test(inputRupiahValue) && !inputRupiahError) {
-        inputRupiahErrorMsg = item.errMsg
-        inputRupiahError = true
-        this.setState({
-          inputRupiahErrorMsg,
-          inputRupiahError
-        })
-      }
-    })
+    if (!allowedPattern.test(inputRupiahValue)) {
+      inputRupiahErrorMsg = 'Invalid input rupiah'
+      inputRupiahError = true
+      this.setState({
+        inputRupiahErrorMsg,
+        inputRupiahError
+      })
+    }
 
     if (inputRupiahError) {
       this.props.submitRupiah(`An error occored: ${inputRupiahErrorMsg}`, inputRupiahError)
       return
     }
 
-    // Input rupiah parsing    
+    // Input rupiah parsing  
+    // Remove ending ,00
+    inputRupiahValue = inputRupiahValue.replace(/(,00)$/g, '')  
+
     // Remove non-number char
     inputRupiahValue = inputRupiahValue.replace(/[^0-9]/g, '')
 
