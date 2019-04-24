@@ -52,15 +52,20 @@ describe('submit button click', () => {
     test('calls `submitRupiahProps`', () => {
       expect(submitRupiahMock.mock.calls.length).toBe(1)
     })
-    test('calls `submitRupiahProps` with non-empty arguments', () => {
+    test('calls `submitRupiahProps` with two arguments', () => {
       const submitRupiahPropArgs = submitRupiahMock.mock.calls[0]
       expect(submitRupiahPropArgs.length).toBe(2)
     })
   })
   describe('calcuate decomposition', () => {
-    let wrapper
+    let wrapper,
+        submitRupiahMock
     beforeEach(() => {
-      wrapper = setup()
+      submitRupiahMock = jest.fn()
+      const props = {
+        submitRupiah: submitRupiahMock
+      }
+      wrapper = setup(props)
     })
     test('decompose 15000 rupiah', () => {
       let inputRupiah = 15000
@@ -70,19 +75,75 @@ describe('submit button click', () => {
       const submitButton = findByTestAttr(wrapper, 'submit-button')
       submitButton.simulate('click', { preventDefault() {} })
 
-      const decomposeResult = calcuateDecomposeRupiah(inputRupiah)
-      expect(wrapper.instance().state.decomposeResult).toEqual(decomposeResult)
+      const expectedDocompose = '1 x Rp10000, 1 x Rp5000'
+      const resultDecompose = submitRupiahMock.mock.calls[0][0]
+
+      expect(resultDecompose).toBe(expectedDocompose)
     })
-    test('decompose 12510 rupiah', () => {
-      let inputRupiah = 12510
+    test('decompose 18.215 rupiah', () => {
+      let inputRupiah = '18.215'
       
       wrapper.instance().inputRupiah.current = { value: inputRupiah }
 
       const submitButton = findByTestAttr(wrapper, 'submit-button')
       submitButton.simulate('click', { preventDefault() {} })
 
-      const decomposeResult = calcuateDecomposeRupiah(inputRupiah)
-      expect(wrapper.instance().state.decomposeResult).toEqual(decomposeResult)
+      const expectedDocompose = '1 x Rp10000, 1 x Rp5000, 1 x Rp2000, 1 x Rp1000, 2 x Rp100, left Rp15'
+      const resultDecompose = submitRupiahMock.mock.calls[0][0]
+
+      expect(resultDecompose).toBe(expectedDocompose)
+    })
+    test('decompose Rp17500 rupiah', () => {
+      let inputRupiah = 'Rp17500'
+      
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      const expectedDocompose = '1 x Rp10000, 1 x Rp5000, 1 x Rp2000, 1 x Rp500'
+      const resultDecompose = submitRupiahMock.mock.calls[0][0]
+
+      expect(resultDecompose).toBe(expectedDocompose)
+    })
+    test('decompose Rp 120.325 rupiah', () => {
+      let inputRupiah = 'Rp 120.325'
+      
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      const expectedDocompose = '1 x Rp100000, 1 x Rp20000, 3 x Rp100, left Rp25'
+      const resultDecompose = submitRupiahMock.mock.calls[0][0]
+
+      expect(resultDecompose).toBe(expectedDocompose)
+    })
+    test('decompose 005.000 rupiah', () => {
+      let inputRupiah = '005.000'
+      
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      const expectedDocompose = '1 x Rp5000'
+      const resultDecompose = submitRupiahMock.mock.calls[0][0]
+
+      expect(resultDecompose).toBe(expectedDocompose)
+    })
+    test('decompose 001000 rupiah', () => {
+      let inputRupiah = '001000'
+      
+      wrapper.instance().inputRupiah.current = { value: inputRupiah }
+
+      const submitButton = findByTestAttr(wrapper, 'submit-button')
+      submitButton.simulate('click', { preventDefault() {} })
+
+      const expectedDocompose = '1 x Rp1000'
+      const resultDecompose = submitRupiahMock.mock.calls[0][0]
+
+      expect(resultDecompose).toBe(expectedDocompose)
     })
   })
   describe('inputRupiah validation error', () => {
@@ -131,78 +192,6 @@ describe('submit button click', () => {
       submitButton.simulate('click', { preventDefault() {} })
 
       expect(wrapper.instance().state.inputRupiahErrorMsg).toBe(expectedErrorMsg)
-    })
-  })
-  describe('inputRupiah validation success and inputRupiah parsing', () => {
-    let wrapper
-    beforeEach(() => {
-      wrapper = setup()
-    })
-    test('get `18215` with input `18.215`', () => {
-      let inputRupiah = '18.215'
-      const expectedParsedInput = 18215
-
-      wrapper.instance().inputRupiah.current = { value: inputRupiah }
-
-      const submitButton = findByTestAttr(wrapper, 'submit-button')
-      submitButton.simulate('click', { preventDefault() {} })
-
-      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
-    })
-    test('get `17500` with input `Rp17500`', () => {
-      let inputRupiah = 'Rp17500'
-      const expectedParsedInput = 17500
-
-      wrapper.instance().inputRupiah.current = { value: inputRupiah }
-
-      const submitButton = findByTestAttr(wrapper, 'submit-button')
-      submitButton.simulate('click', { preventDefault() {} })
-
-      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
-    })
-    test('get `17500` with input `Rp17.500,00`', () => {
-      let inputRupiah = 'Rp17.500,00'
-      const expectedParsedInput = 17500
-
-      wrapper.instance().inputRupiah.current = { value: inputRupiah }
-
-      const submitButton = findByTestAttr(wrapper, 'submit-button')
-      submitButton.simulate('click', { preventDefault() {} })
-
-      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
-    })
-    test('get `120325` with input `Rp 120.325`', () => {
-      let inputRupiah = 'Rp 120.325'
-      const expectedParsedInput = 120325
-
-      wrapper.instance().inputRupiah.current = { value: inputRupiah }
-
-      const submitButton = findByTestAttr(wrapper, 'submit-button')
-      submitButton.simulate('click', { preventDefault() {} })
-      
-      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
-    })
-    test('get `5000` with input `005.000`', () => {
-      let inputRupiah = '005.000'
-      const expectedParsedInput = 5000
-
-      wrapper.instance().inputRupiah.current = { value: inputRupiah }
-
-      const submitButton = findByTestAttr(wrapper, 'submit-button')
-      submitButton.simulate('click', { preventDefault() {} })
-      
-      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
-    })
-    test('get `1000` with input `001000`', () => {
-      let inputRupiah = '001000'
-      const expectedParsedInput = 1000
-
-      wrapper.instance().inputRupiah.current = { value: inputRupiah }
-
-      const submitButton = findByTestAttr(wrapper, 'submit-button')
-      submitButton.simulate('click', { preventDefault() {} })
-
-      expect(wrapper.instance().state.inputRupiahValue).toBe(expectedParsedInput)
     })
   })
 
