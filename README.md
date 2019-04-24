@@ -26,7 +26,7 @@ These instructions will get you a copy of the project up and running on your loc
 Go to the application directory and run `npm install`, below is command example when using linux or mac
 
 ```
-$ cd rupiah-decompostion
+$ cd rupiah-decomposition
 $ nmp install
 ```
 
@@ -35,7 +35,7 @@ $ nmp install
 To run the automated tests for this application go to application directory and run `npm test`, below is command example when using linux or mac
 
 ```
-$ cd rupiah-decompostion
+$ cd rupiah-decomposition
 $ nmp test
 ```
 
