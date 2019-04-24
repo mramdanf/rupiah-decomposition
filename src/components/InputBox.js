@@ -42,10 +42,10 @@ class InputBox extends React.Component {
       
     // Input rupiah validation      
     const inValidCheck = [
-      { pattern: /^([^0-9]*)$/, errMsg: 'missing value' },
-      { pattern: /\d+,\d+/, errMsg: 'invalid separator' },
-      { pattern: /\d+ \d+/, errMsg: 'invalid separator' },
-      { pattern: /\d*.Rp/, errMsg: 'valid character in wrong position' },
+      { pattern: /^([^0-9]*)$/g, errMsg: 'missing value' },
+      { pattern: /\d+,\d+/g, errMsg: 'invalid separator' },
+      { pattern: /\d+ \d+/g, errMsg: 'invalid separator' },
+      { pattern: /\d*.Rp/g, errMsg: 'valid character in wrong position' },
       { pattern: /[^0-9rp. ]/gi, errMsg: 'invalid character' },
     ]
 

@@ -23,6 +23,8 @@ export const calcuateDecomposeRupiah = (inputRupiah) => {
       ]
 
   while(inputRupiah !== 0) {
+
+    // Condition when inputRupiah < 50 (minimum available rupiah)
     if (i === availableRupiah.length) {
       left = `Rp${inputRupiah}`
       break
