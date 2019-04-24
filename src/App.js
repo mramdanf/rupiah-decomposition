@@ -1,4 +1,5 @@
 import React from 'react';
+import './index.css'
 
 import InputBox from './components/InputBox'
 import ResutlText from './components/ResultText'
@@ -7,19 +8,25 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      rupiahDecompose: ''
+      rupiahDecompose: '',
+      inputRupiahError: false,
     }
   }
 
-  decomposeRupiah = (val) => {
+  decomposeRupiah = (val, inputRupiahError) => {
     this.setState({
-      rupiahDecompose: val
+      rupiahDecompose: val,
+      inputRupiahError,
     })
   }
 
   render() {
     return (
-      <div data-test="component-app">
+      <div 
+        id="app-section"
+        data-test="component-app"
+        className="container text-center"
+      >
         <InputBox 
           data-test="input-box"
           submitRupiah={this.decomposeRupiah}
@@ -28,6 +35,7 @@ class App extends React.Component {
           data-test="result-text"
           display={this.state.rupiahDecompose !== ''}
           text={this.state.rupiahDecompose}
+          error={this.state.inputRupiahError}
         />
       </div>
     );

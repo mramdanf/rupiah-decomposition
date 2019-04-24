@@ -20,77 +20,95 @@ class InputBox extends React.Component {
 
   handleSubmitRupiah = (e) => {
     e.preventDefault()
-    if (this.inputRupiah.current.value.toString().length > 0) {
-      
-      let inputRupiahValue = this.inputRupiah.current.value.toString(),
-          inputRupiahErrorMsg = '',
-          inputRupiahError = false
-      
-      // Input rupiah validation      
-      const inValidCheck = [
-        { pattern: /^([^0-9]*)$/, errMsg: 'missing value' },
-        { pattern: /,\d{3}/, errMsg: 'invalid separator' },
-        { pattern: /\d+ \d{3}/, errMsg: 'invalid separator' },
-        { pattern: /\d*.Rp/, errMsg: 'valid character in wrong position' },
-      ]
 
-      inValidCheck.forEach(item => {
-        if (item.pattern.test(inputRupiahValue)) {
-          inputRupiahErrorMsg = item.errMsg
-          inputRupiahError = true
-          this.setState({
-            inputRupiahErrorMsg,
-            inputRupiahError
-          })
-        }
-      })
+    let inputRupiahErrorMsg = '',
+        inputRupiahError = false
 
-      if (this.state.inputRupiahError) {
-        this.props.submitRupiah(inputRupiahErrorMsg)
-        return
-      }
-
-      // Input rupiah parsing
-      // Remove ,00 if exist
-      inputRupiahValue = inputRupiahValue.replace(/(,00)$/g, '')
-      // Remove non-number char
-      inputRupiahValue = inputRupiahValue.replace(/[^0-9]/g, '')
-
-      inputRupiahValue = parseInt(inputRupiahValue)
-
-      const decomposeResult = calcuateDecomposeRupiah(inputRupiahValue)
-      
+    if (this.inputRupiah.current.value.toString().length <= 0) {
+      inputRupiahErrorMsg = 'An error occored: Input rupiah could not be empty'
+      inputRupiahError = true
       this.setState({
-        decomposeResult,
-        inputRupiahValue: inputRupiahValue
+        inputRupiahError,
+        inputRupiahErrorMsg,
       })
-
-      // Crafting Result text
-      let resultText = ''
-      decomposeResult.availableRupiah.forEach(item => {
-        if (item.count > 0)
-          resultText += `${item.count} x Rp${item.nominal}, `
-      })
-
-      // Remove ,<space> in the end
-      resultText = resultText.replace(/,.$/, '')
-
-      if (decomposeResult.left !== '') {
-        resultText += `, left ${decomposeResult.left}`
-      }
-
-      this.props.submitRupiah(resultText)
+      this.props.submitRupiah(inputRupiahErrorMsg, inputRupiahError)
+      return
     }
+
+    let inputRupiahValue = this.inputRupiah.current.value.toString()        
+      
+    // Input rupiah validation      
+    const inValidCheck = [
+      { pattern: /^([^0-9]*)$/, errMsg: 'missing value' },
+      { pattern: /\d+,\d+/, errMsg: 'invalid separator' },
+      { pattern: /\d+ \d+/, errMsg: 'invalid separator' },
+      { pattern: /\d*.Rp/, errMsg: 'valid character in wrong position' },
+    ]
+
+    inValidCheck.forEach(item => {
+      if (item.pattern.test(inputRupiahValue)) {
+        inputRupiahErrorMsg = item.errMsg
+        inputRupiahError = true
+        this.setState({
+          inputRupiahErrorMsg,
+          inputRupiahError
+        })
+      }
+    })
+
+    if (inputRupiahError) {
+      this.props.submitRupiah(`An error occored: ${inputRupiahErrorMsg}`, inputRupiahError)
+      return
+    }
+
+    // Input rupiah parsing
+    // Remove ,00 if exist
+    inputRupiahValue = inputRupiahValue.replace(/(,00)$/g, '')
+    
+    // Remove non-number char
+    inputRupiahValue = inputRupiahValue.replace(/[^0-9]/g, '')
+
+    inputRupiahValue = parseInt(inputRupiahValue)
+
+    const decomposeResult = calcuateDecomposeRupiah(inputRupiahValue)
+    
+    this.setState({
+      decomposeResult,
+      inputRupiahValue
+    })
+
+    // Crafting Result text
+    let resultText = ''
+    decomposeResult.availableRupiah.forEach(item => {
+      if (item.count > 0)
+        resultText += `${item.count} x Rp${item.nominal}, `
+    })
+
+    // Remove ,<space> in the end
+    resultText = resultText.replace(/,.$/, '')
+
+    if (decomposeResult.left !== '' && resultText.length > 0) {
+      resultText += `, left ${decomposeResult.left}`
+    }
+    else {
+      resultText += `${decomposeResult.left}`
+    }
+
+    this.props.submitRupiah(resultText, inputRupiahError)
   }
 
   render() {
     return (
-      <dir data-test="component-input-box">
-        <h4 data-test="input-instructions">Masukkan nominal dalam rupiah. contoh: 10.000</h4>
+      <div
+        data-test="component-input-box"
+        id="input-box-section"
+      >
+        <h3 data-test="input-instructions">Please input value in rupiah. ex: 10.000</h3>
         <form>
           <div className="form-field">
             <input 
               data-test="input-rupiah"
+              className="form-control"
               ref={this.inputRupiah}
               type="text"
             />
@@ -99,15 +117,16 @@ class InputBox extends React.Component {
             <button
               data-test="submit-button"
               type="submit"
+              className="btn btn-primary"
               onClick={this.handleSubmitRupiah}
             >
-              Hitung
+              Count
             </button>
           </div>
           
         </form>
         
-      </dir>
+      </div>
     )
   }
 }

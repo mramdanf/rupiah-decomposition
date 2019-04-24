@@ -23,7 +23,7 @@ export const calcuateDecomposeRupiah = (inputRupiah) => {
       ]
 
   while(inputRupiah !== 0) {
-    if (i === (availableRupiah.length - 1)) {
+    if (i === availableRupiah.length) {
       left = `Rp${inputRupiah}`
       break
     }
